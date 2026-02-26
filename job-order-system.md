@@ -16,7 +16,7 @@
 - **Charts:** Recharts (Line, Column, Stack, Doughnut)
 - **Database Architecture:** PostgreSQL
 - **ORM:** Drizzle ORM (สำหรับการจัดการ Schema และ Database Migration ที่มีประสิทธิภาพสูง)
-- **Package Manager:** Bun (สำหรับการรันสคริปต์และจัดการแพกเกจที่เร็วกว่า npm)
+- **Package Manager:** npm (เปลี่ยนจาก Bun เพื่อให้ทุกคนในทีมสามารถรันได้โดยไม่ต้องมี Bun)
 - **Language:** TypeScript 
 - **Validation:** Zod + React Hook Form (ตรวจสอบความถูกต้องของข้อมูลก่อนบันทึก)
 
@@ -24,20 +24,23 @@
 ระบบนี้ถูกออกแบบมาเพื่อ **ผู้บริหารและหัวหน้างาน** ดังนั้น UI/UX ต้องมีความเป็นทางการ ทันสมัย สวยงาม และดู Premium:
 - **Color Palette:** ใช้โทนสีสุภาพและเป็นทางการ เช่น ขาว-เทาอ่อนเป็นพื้นหลัง (Minimalist), ตัดด้วยสีแบรนด์หรือสีน้ำเงินเข้ม (Navy/Slate) สำหรับองค์ประกอบสำคัญ และหลีกเลี่ยงสีที่ฉูดฉาดเกินไป
 - **Card & Layout:** ใช้ Card ที่มีขอบมนเล็กน้อย (Rounded-lg), ใส่ Shadow บางๆ แบบนุ่มนวล (Soft shadow) ไม่แข็งกระด้าง
-- **Typography:** ใช้ฟอนต์ **K2D** (จาก Google Fonts) เป็นฟอนต์หลักสำหรับ **ทั้งระบบ** (ครอบคลุมทุกส่วนของหน้าจอ เพื่อให้ได้ความรู้สึกทันสมัยกึ่งทางการ และอ่านง่ายในระดับผู้บริหาร)
+- **Typography:** ใช้ฟอนต์ **K2D** (จาก Google Fonts) เป็นฟอนต์หลักสำหรับ **ทั้งระบบ** (ครอบคลุมทุกส่วนของหน้าจอ ย้ำว่าต้อง import `K2D` จาก `next/font/google` ใน `app/layout.tsx` พร้อมประกาศ CSS Variable ลงใน Tailwind ให้ครบถ้วน เพื่อให้ได้ความรู้สึกทันสมัยกึ่งทางการ และอ่านง่ายในระดับผู้บริหาร)
 - **Charts:** กราฟต้องดูเรียบหรู ไม่อัดแน่นเกินไป ใช้สีแยกประเภทข้อมูล (Legend) ให้ชัดเจนสำหรับอ่านง่าย
 - **Responsive:** ต้องดูดีบนทุกอุปกรณ์ (Mobile, Tablet, Desktop) การวาง Grid ของ Dashboard ต้องปรับเปลี่ยนตามพื้นที่อย่างสมบูรณ์
 
 ## 3.5. Initialization Commands (For Agent)
 ให้ Agent รันชุดคำสั่งเหล่านี้ทันทีที่เริ่มงาน เพื่อเตรียมความพร้อมโครงสร้าง:
+
+> **IMPORTANT:** หากการสร้างโปรเจกต์ (Next.js Init) ไม่สามารถรันใน current folder ได้ เนื่องจากแจ้งเตือนว่าโฟลเดอร์มีไฟล์ (เช่น `.env` หรือ `.git` อยู่) ให้ **Force ผ่านปัญหานี้ให้ได้ (Zero-shot)** เช่น ย้ายไฟล์ที่ติดปัญหาออกชั่วคราว, หรือสร้างโปรเจกต์ใน Sub-folder แล้วย้ายไฟล์ออกมาแทนที่ Root
+
 1. **Next.js Init:** (หากยังไม่มีโครง `package.json`)
-   `bunx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir=false --import-alias="@/*"`
+   `npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir=false --import-alias="@/*" --use-npm`
 2. **Install Core & Drizzle:** 
-   `bun add drizzle-orm postgres @radix-ui/react-slot class-variance-authority clsx tailwind-merge lucide-react recharts react-hook-form @hookform/resolvers zod date-fns`
-   `bun add -d drizzle-kit @types/node @types/react @types/postgres tsx`
+   `npm install drizzle-orm postgres @radix-ui/react-slot class-variance-authority clsx tailwind-merge lucide-react recharts react-hook-form @hookform/resolvers zod date-fns`
+   `npm install -D drizzle-kit @types/node @types/react @types/postgres tsx`
 3. **Setup Shadcn UI:**
-   `bunx --bun shadcn-ui@latest init -d`
-   `bunx --bun shadcn-ui@latest add button card table input select form toast`
+   `npx shadcn@latest init -d`
+   `npx shadcn@latest add button card table input select form toast`
 4. **Drizzle Config:**
    และสร้าง `drizzle.config.ts` ให้เรียบร้อยเพื่อเตรียมชี้ไปยัง `.env`
 
@@ -139,11 +142,11 @@ export const jobOrdersRelations = relations(jobOrders, ({ one }) => ({
 ```json
 "scripts": {
   "db:push": "drizzle-kit push",
-  "db:seed": "bun run db/seed.ts",
-  "db:setup": "bun run db:push && bun run db:seed"
+  "db:seed": "tsx db/seed.ts",
+  "db:setup": "npm run db:push && npm run db:seed"
 }
 ```
-**คำสั่งเดียวจบ:** `bun run db:setup` (สร้าง Schema และยิงข้อมูล Plan A001, A002 และ Job Order ย่อย 20 รายการลงอัตโนมัติ)
+**คำสั่งเดียวจบ:** `npm run db:setup` (สร้าง Schema และยิงข้อมูล Plan A001, A002 และ Job Order ย่อย 20 รายการลงอัตโนมัติ)
 
 ## 9. Task Breakdown (Continuous Execution)
 
@@ -151,7 +154,7 @@ export const jobOrdersRelations = relations(jobOrders, ({ one }) => ({
 
 | Task ID | Component/Feature | Priority | Agent / Skill | Dependencies | Description / Verification |
 |---------|-------------------|----------|---------------|--------------|----------------------------|
-| T01 | One-Shot DB Setup & Seed | P0 | `database-architect` <br> `database-design` | - | **IN:** Postgres URL <br> **OUT:** รัน `bun run db:setup` ครั้งเดียวได้ทั้งตารางและ Mock Data <br> **VERIFY:** ข้อมูลสุ่มเข้า DB ถูกต้อง ครบถ้วน พร้อมใช้งาน |
+| T01 | One-Shot DB Setup & Seed | P0 | `database-architect` <br> `database-design` | - | **IN:** Postgres URL <br> **OUT:** รัน `npm run db:setup` ครั้งเดียวได้ทั้งตารางและ Mock Data <br> **VERIFY:** ข้อมูลสุ่มเข้า DB ถูกต้อง ครบถ้วน พร้อมใช้งาน |
 | T02 | API Routes Implementation | P1 | `backend-specialist` <br> `api-patterns` | T01 | **IN:** Schema <br> **OUT:** GET/POST API ของ Plan & Job Order <br> **VERIFY:** Postman/fetch สามารถดึงข้อมูลและเพิ่มข้อมูลได้ |
 | T03 | UI Foundation & Layout | P2 | `frontend-specialist` <br> `frontend-design` | - | **IN:** Next.js Blank <br> **OUT:** Sidebar Layout & ติดตั้ง Shadcn UI <br> **VERIFY:** Layout สมบูรณ์ คลิก Navigate ได้ |
 | T04 | Plan Page & Form | P2 | `frontend-specialist` <br> `react-best-practices` | T02, T03 | **IN:** UI Layout & API <br> **OUT:** ตาราง Plan & Form สร้างแบบ Zod Validation <br> **VERIFY:** สร้าง Plan จากหน้าเว็บลง DB ได้ |
@@ -161,7 +164,7 @@ export const jobOrdersRelations = relations(jobOrders, ({ one }) => ({
 
 ## 10. Phase X: Verification (Final Output Check)
 ตรวจสอบคุณภาพระบบก่อนจบงานตามมาตรการ `project-planner`:
-- [ ] `bun run lint` & Type Checking ปราศจาก Errors
+- [ ] `npm run lint` & Type Checking ปราศจาก Errors
 - [ ] Security Scan พื้นฐาน เช่นไม่มี API Endpoint ใดเผยแพร่รหัสผ่าน Database
 - [ ] Responsive UI - ทุกหน้าต้องแสดงผลสมบูรณ์และใช้งานได้ดีใน **ทุกอุปกรณ์ (Mobile, Tablet, Desktop ทุกขนาดหน้าจอ)** โดยไม่มี UI แตกหัก
 - [ ] สร้างข้อมูลตัวอย่าง (T02) และแสดงผลในรูปแบบกราฟได้ชัดเจน ครบทั้ง 4 ประเภท

@@ -6,6 +6,31 @@
 ## 1. Overview
 ระบบสำหรับจัดการแผนการผลิต (Plans) และติดตามคำสั่งผลิต (Job Orders) ตามเป้าหมาย ประกอบด้วยหน้าแดชบอร์ดสรุปผลภาพรวม หน้าจัดการ Plan และหน้าบันทึกผลการผลิตของ Job Order จริง เพื่อให้โรงงานหรือทีมบริหารสามารถดูความคืบหน้า ประสิทธิภาพการผลิต และปัญหาที่เกิดขึ้นได้แบบ Real-time
 
+## 1.1 System Requirements (Requirement ระบบ)
+1. **การจัดการแผนการผลิต (Plan Management):**
+   - สามารถสร้างและดูรายละเอียดแผนการผลิต (Plan) ได้
+   - กำหนดรหัสแผน (Plan Code) และเป้าหมายการผลิตรวม (Target Qty)
+   - ติดตามสถานะของแผนการผลิต (Pending, In Progress, Completed)
+2. **การจัดการคำสั่งผลิต (Job Order Management):**
+   - สามารถสร้าง Job Order ย่อยภายใต้ Plan ที่กำหนดได้
+   - บันทึกเป้าหมาย (Target Qty) และยอดที่ผลิตได้จริง (Actual Qty)
+   - บันทึกค่าการใช้พลังงาน (Energy kWh) สำหรับการวิเคราะห์ต้นทุน
+   - บันทึกข้อมูลการตรวจสอบคุณภาพ (Inspection Data: กว้าง, ยาว, หนา, สูง)
+3. **แดชบอร์ดและรายงาน (Dashboard & Analytics):**
+   - แสดง Card สรุปข้อมูลสำคัญ (เช่น ยอดผลิตรวม, พลังงานรวม, จำนวน Job Order)
+   - แสดงกราฟวิเคราะห์ข้อมูล 4 รูปแบบ เพื่อการตัดสินใจของผู้บริหาร
+   - ตารางข้อมูล (Data Table) ที่สามารถค้นหา (Search) และกรอง (Filter) ตาม Plan ได้
+4. **มาตรฐานระบบ (System Standards):**
+   - ตรวจสอบความถูกต้องของข้อมูล (Data Validation) ก่อนบันทึกลงฐานข้อมูลเสมอ
+   - รองรับการแสดงผลทุกขนาดหน้าจอ (Responsive Design) เน้นความสวยงามระดับ Executive
+
+## 1.2 Recommended Charts (รูปแบบกราฟที่แนะนำ)
+เพื่อให้การนำเสนอข้อมูลเป็นไปในทิศทางเดียวกันและตอบโจทย์ผู้บริหาร แนะนำให้ใช้กราฟ 4 รูปแบบดังนี้:
+1. **Doughnut Chart (Overall Production Progress):** แสดงสัดส่วน "จำนวนที่ผลิตได้จริง (Actual)" เทียบกับ "เป้าหมายที่เหลือ (Remaining)" เพื่อให้เห็นความคืบหน้าของแผนงานทั้งหมด
+2. **Column Chart (Production by Plan):** เปรียบเทียบ "เป้าหมาย (Target)" และ "ผลิตจริง (Actual)" แยกตามแต่ละ Plan (เช่น A001, A002) เพื่อดูประสิทธิภาพรายแผน
+3. **Stacked Bar Chart (Job Order Status):** แสดงจำนวน Job Order โดยแบ่งตามสถานะ (Pending, In Progress, Completed) ซ้อนกันในแต่ละ Plan เพื่อดูคอขวดของการทำงาน
+4. **Line Chart (Energy Consumption Trend):** แสดงแนวโน้มการใช้พลังงาน (Energy kWh) ของแต่ละ Job Order ตามลำดับเวลา เพื่อเฝ้าระวังการใช้พลังงานที่ผิดปกติ
+
 ## 2. Project Type
 **WEB** (Next.js Application)
 
@@ -20,7 +45,7 @@
 - **Language:** TypeScript 
 - **Validation:** Zod + React Hook Form (ตรวจสอบความถูกต้องของข้อมูลก่อนบันทึก)
 
-## 3.5 Executive UI/UX Design Guidelines (คำสั่งพิเศษสำหรับ Frontend Agent)
+## 3.6 Executive UI/UX Design Guidelines (คำสั่งพิเศษสำหรับ Frontend Agent)
 ระบบนี้ถูกออกแบบมาเพื่อ **ผู้บริหารและหัวหน้างาน** ดังนั้น UI/UX ต้องมีความเป็นทางการ ทันสมัย สวยงาม และดู Premium:
 - **Color Palette:** ใช้โทนสีสุภาพและเป็นทางการ เช่น ขาว-เทาอ่อนเป็นพื้นหลัง (Minimalist), ตัดด้วยสีแบรนด์หรือสีน้ำเงินเข้ม (Navy/Slate) สำหรับองค์ประกอบสำคัญ และหลีกเลี่ยงสีที่ฉูดฉาดเกินไป
 - **Card & Layout:** ใช้ Card ที่มีขอบมนเล็กน้อย (Rounded-lg), ใส่ Shadow บางๆ แบบนุ่มนวล (Soft shadow) ไม่แข็งกระด้าง
@@ -37,7 +62,7 @@
    `npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir=false --import-alias="@/*" --use-npm`
 2. **Install Core & Drizzle:** 
    `npm install drizzle-orm postgres @radix-ui/react-slot class-variance-authority clsx tailwind-merge lucide-react recharts react-hook-form @hookform/resolvers zod date-fns`
-   `npm install -D drizzle-kit @types/node @types/react @types/postgres tsx`
+   `npm install -D drizzle-kit @types/node @types/react tsx`
 3. **Setup Shadcn UI:**
    `npx shadcn@latest init -d`
    `npx shadcn@latest add button card table input select form toast`
@@ -49,13 +74,14 @@
 - [ ] เมนู Sidebar สามารถ Navigate ไปยัง Dashboard, Plan และ Job Order ได้.
 - [ ] ระบบ Database และ Schema รองรับข้อมูลและใช้งานได้จริง
 - [ ] สามารถสร้าง Mock Data/ข้อมูลตัวอย่าง เข้าสู่ Database ได้อัตโนมัติตาม Requirement (Plan A001, A002 และ Job Order ย่อย 20 รายการ)
-- [ ] หน้า Dashboard แสดง Card สรุป 4 ใบ, Chart 4 รูปแบบ และ DataTable ที่เปิดให้ Search/Filter ตาม Plan ได้
+- [ ] หน้า Dashboard แสดง Card สรุป 4 ใบ ได้แก่ **(1) ยอดผลิตจริงรวม (Total Actual Qty), (2) เป้าหมายรวม (Total Target Qty), (3) จำนวน Job Order ทั้งหมด, (4) พลังงานรวมที่ใช้ (Total Energy kWh)**, Chart 4 รูปแบบ และ DataTable ที่เปิดให้ Search/Filter ตาม Plan ได้
 - [ ] หน้าเพิ่ม Plan Validation ป้องกันค่าที่ผิดปกติ
 - [ ] หน้าเพิ่ม Job Order Validation ตรวจสอบข้อมูลมิติสินคัาและการใช้พลังงานให้ครบพร้อมผูกกับ Plan ที่ถูกต้อง
 
 ## 5. File Structure
 ```text
 app/
+  page.tsx                     # Root redirect → /dashboard
   (routes)/
     dashboard/
       page.tsx                 # หน้าสรุปภาพรวม
@@ -82,6 +108,8 @@ lib/
 db/
   index.ts                     # Database client instantiation (Drizzle)
   schema.ts                    # แบบจำลองโครงสร้าง Database
+  seed.ts                      # ไฟล์ Seed ข้อมูลตัวอย่าง (Plan A001, A002 + Job Order 20 รายการ)
+drizzle.config.ts              # Drizzle Kit configuration (ชี้ไปยัง DATABASE_URL)
 ```
 
 ## 6. Database Schema (Drizzle ORM)
@@ -94,6 +122,7 @@ import { relations } from "drizzle-orm";
 export const plans = pgTable("plans", {
   id: uuid("id").primaryKey().defaultRandom(),
   code: varchar("code", { length: 255 }).notNull().unique(), // รหัสแผน e.g. "A001"
+  name: varchar("name", { length: 255 }).notNull(), // ชื่อแผนการผลิต e.g. "แผนผลิต Quarter 1"
   targetQty: integer("target_qty").notNull(), // เป้าหมายรวมการผลิต
   status: varchar("status", { length: 50 }).notNull().default("PENDING"), // PENDING, IN_PROGRESS, COMPLETED
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -115,7 +144,7 @@ export const jobOrders = pgTable("job_orders", {
   length: doublePrecision("length").notNull(), // ยาว
   thickness: doublePrecision("thickness").notNull(), // หนา
   height: doublePrecision("height").notNull(), // ความสูง
-  status: varchar("status", { length: 50 }).notNull().default("COMPLETED"),
+  status: varchar("status", { length: 50 }).notNull().default("PENDING"), // PENDING, IN_PROGRESS, COMPLETED
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
